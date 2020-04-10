@@ -1,6 +1,4 @@
 package server
-
-
 import (
 	"fmt"
 	"github.com/gorilla/mux"
@@ -13,9 +11,11 @@ const(
 )
 
 func AppendControllers(router *mux.Router){
-	//covidController := newCovidController()
+	covidController := newCovidController()
 
 	router.HandleFunc("/ping", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprintln(writer, "up and going")
 	}).Methods(GET)
+
+	router.HandleFunc("/elastic", covidController.RunElastic).Methods(GET)
 }

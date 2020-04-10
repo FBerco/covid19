@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/gorilla/mux"
 	"net/http"
-	"github.com/mercadolibre/covid19/src/api/server"
+	"github.com/FBerco/covid19/src/api/server"
 
 )
 

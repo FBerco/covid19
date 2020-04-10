@@ -19,3 +19,6 @@
 .idea
 api
 !api/
+.DS_Store
+src/.DS_Store
+debug

@@ -2,13 +2,27 @@ package covid
 
 import (
 	"fmt"
-	"github.com/elastic/go-elasticsearch"
+	"github.com/elastic/go-elasticsearch/v8"
 	"log"
 	"net/http"
 )
 
-type Controller struct{
+type DataService interface {
+	GetConfirmedCases() ([]DataSetRow, error)
+	GetDeath() ([]DataSetRow, error)
+	GetRecovered() ([]DataSetRow, error)
+}
 
+type Controller struct{
+	Service DataService
+}
+
+func (c Controller) DownloadData(writer http.ResponseWriter, request *http.Request){
+	dataset, err := c.Service.GetConfirmedCases()
+	if err != nil{
+		log.Fatalf("Error getting response: %s", err)
+	}
+	fmt.Fprintln(writer, dataset)
 }
 
 func (c Controller) RunElastic(writer http.ResponseWriter, request *http.Request){
@@ -22,5 +36,5 @@ func (c Controller) RunElastic(writer http.ResponseWriter, request *http.Request
 		log.Fatalf("Error getting response: %s", err)
 	}
 
-	fmt.Println(res)
+	fmt.Fprintln(writer, res)
 }

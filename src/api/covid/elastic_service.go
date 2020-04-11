@@ -47,7 +47,8 @@ func (service ElasticService) IndexDataSet(dataset []DataSetRow){
 			doc.Date = perday.Date
 			doc.Count = perday.Count
 
-			go service.IndexDoc(ctx, doc)
+			//todo GO ROUTINE
+			service.IndexDoc(ctx, doc)
 		}
 	}
 }
@@ -68,7 +69,7 @@ func (service ElasticService) IndexDoc(ctx context.Context, doc ElasticDoc) {
 	defer res.Body.Close()
 
 	if res.IsError() {
-		log.Printf("%s ERROR indexing document ID=%d", res.Status(), req.DocumentID)
+		log.Fatalf("%s ERROR indexing document ID=%d", res.Status(), req.DocumentID)
 	} else {
 		// Deserialize the response into a map.
 		var resMap map[string]interface{}
@@ -85,4 +86,3 @@ func (service ElasticService) IndexDoc(ctx context.Context, doc ElasticDoc) {
 		}
 	}
 }
-

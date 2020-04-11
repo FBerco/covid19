@@ -16,21 +16,21 @@ const (
 	)
 
 
-type Service struct{
+type DataService struct{
 
 }
 
-func (s Service) GetConfirmedCases() ([]DataSetRow, error){
-	return s.getData(confirmedUrl)
+func (service DataService) GetConfirmedCases() ([]DataSetRow, error){
+	return service.getData(confirmedUrl)
 }
-func (s Service) GetDeath() ([]DataSetRow, error){
-	return s.getData(deathsUrl)
+func (service DataService) GetDeath() ([]DataSetRow, error){
+	return service.getData(deathsUrl)
 }
-func (s Service) GetRecovered() ([]DataSetRow, error){
-	return s.getData(recoverdUrl)
+func (service DataService) GetRecovered() ([]DataSetRow, error){
+	return service.getData(recoverdUrl)
 }
 
-func (s Service) getData(url string) ([]DataSetRow, error){
+func (service DataService) getData(url string) ([]DataSetRow, error){
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("error downloading data: %s", err)
@@ -68,3 +68,4 @@ func (s Service) getData(url string) ([]DataSetRow, error){
 	}
 	return dataset, nil
 }
+

@@ -7,22 +7,29 @@ import (
 	"net/http"
 )
 
-type DataService interface {
+type dataService interface {
 	GetConfirmedCases() ([]DataSetRow, error)
 	GetDeath() ([]DataSetRow, error)
 	GetRecovered() ([]DataSetRow, error)
 }
 
+type elasticService interface{
+	IndexDataSet(dataset []DataSetRow)
+}
+
 type Controller struct{
-	Service DataService
+	DataService dataService
+	ElasticService elasticService
 }
 
 func (c Controller) DownloadData(writer http.ResponseWriter, request *http.Request){
-	dataset, err := c.Service.GetConfirmedCases()
+	dataset, err := c.DataService.GetConfirmedCases()
 	if err != nil{
 		log.Fatalf("Error getting response: %s", err)
 	}
-	fmt.Fprintln(writer, dataset)
+	fmt.Println("Got the data")
+	fmt.Println("Indexing to elastic")
+	c.ElasticService.IndexDataSet(dataset)
 }
 
 func (c Controller) RunElastic(writer http.ResponseWriter, request *http.Request){

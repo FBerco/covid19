@@ -14,7 +14,7 @@ type dataService interface {
 }
 
 type elasticService interface{
-	IndexDataSet(dataset DataSet)
+	IndexDataSet(dataset DataSet) error
 }
 
 type Controller struct{

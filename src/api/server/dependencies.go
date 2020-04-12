@@ -18,7 +18,7 @@ func newDataService() *covid.DataService{
 	return &covid.DataService{}
 }
 
-func newElasticService()*covid.ElasticService{
+func newElasticService() *covid.ElasticService{
 	es, err := elasticsearch.NewDefaultClient()
 	if err != nil {
 		log.Fatalf("Error creating the client: %s", err)

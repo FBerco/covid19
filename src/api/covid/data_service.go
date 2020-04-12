@@ -67,7 +67,7 @@ func (service DataService) getData(url string) (DataSet, error){
 			value, err := strconv.Atoi(data[i])
 			if err != nil {
 				fmt.Println(data)
-				return nil, fmt.Errorf("error converting data: %s, i: %s", err, i)
+				return DataSet{}, fmt.Errorf("error converting data: %s, i: %s", err, i)
 				}
 			values = append(values, PerDayValues{
 				Date:  date.Format("2006-01-02"),
@@ -78,6 +78,6 @@ func (service DataService) getData(url string) (DataSet, error){
 		row.Values = values
 		dataset = append(dataset, row)
 	}
-	return dataset, nil
+	return DataSet{Data: dataset}, nil
 }
 

@@ -8,13 +8,13 @@ import (
 )
 
 type dataService interface {
-	GetConfirmedCases() ([]DataSetRow, error)
-	GetDeath() ([]DataSetRow, error)
-	GetRecovered() ([]DataSetRow, error)
+	GetConfirmedCases() (DataSet, error)
+	GetDeath() (DataSet, error)
+	GetRecovered() (DataSet, error)
 }
 
 type elasticService interface{
-	IndexDataSet(dataset []DataSetRow)
+	IndexDataSet(dataset DataSet)
 }
 
 type Controller struct{
@@ -30,6 +30,7 @@ func (c Controller) DownloadData(writer http.ResponseWriter, request *http.Reque
 	fmt.Println("Got the data")
 	fmt.Println("Indexing to elastic")
 	c.ElasticService.IndexDataSet(dataset)
+	//fmt.Fprintln(writer, dataset)
 }
 
 func (c Controller) RunElastic(writer http.ResponseWriter, request *http.Request){

@@ -10,33 +10,18 @@ import (
 	"strings"
 )
 
-const (
-	index = "some_index"
-)
 type ElasticService struct{
 	Client elasticsearch.Client
 }
 
-type ElasticDoc struct{
-	Province string
-	Country string
-	Latitude string
-	Longitud string
-	Date string
-	Count int
-}
-
-func (e ElasticDoc) GetId() string{
-	if e.Province != ""{
-		return fmt.Sprintf("%s-%s-%s", e.Date, e.Country, e.Province )
+func (service ElasticService) IndexDataSet(dataset DataSet) error{
+	if err := dataset.Valid(); err != nil{
+		return err
 	}
-	return fmt.Sprintf("%s-%s", e.Date, e.Country)
-}
 
-func (service ElasticService) IndexDataSet(dataset []DataSetRow){
 	ctx := context.Background()
 
-	for _, data := range dataset{
+	for _, data := range dataset.Data{
 		doc := ElasticDoc{
 			Province: data.Province,
 			Country: data.Country,
@@ -48,12 +33,14 @@ func (service ElasticService) IndexDataSet(dataset []DataSetRow){
 			doc.Count = perday.Count
 
 			//todo GO ROUTINE
-			service.IndexDoc(ctx, doc)
+			service.IndexDoc(ctx, doc, dataset.Index)
 		}
 	}
+
+	return nil
 }
 
-func (service ElasticService) IndexDoc(ctx context.Context, doc ElasticDoc) {
+func (service ElasticService) IndexDoc(ctx context.Context, doc ElasticDoc, index string) {
 	body, _ := json.Marshal(doc)
 	req := esapi.IndexRequest{
 		Index: index,

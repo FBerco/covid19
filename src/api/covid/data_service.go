@@ -20,20 +20,32 @@ type DataService struct{
 
 }
 
-func (service DataService) GetConfirmedCases() ([]DataSetRow, error){
-	return service.getData(confirmedUrl)
+func (service DataService) GetConfirmedCases() (DataSet, error){
+	dataset, err := service.getData(confirmedUrl)
+	if err == nil{
+		dataset.Index = "confirmed"
+	}
+	return dataset, err
 }
-func (service DataService) GetDeath() ([]DataSetRow, error){
-	return service.getData(deathsUrl)
+func (service DataService) GetDeath() (DataSet, error){
+	dataset, err := service.getData(deathsUrl)
+	if err == nil{
+		dataset.Index = "deaths"
+	}
+	return dataset, err
 }
-func (service DataService) GetRecovered() ([]DataSetRow, error){
-	return service.getData(recoverdUrl)
+func (service DataService) GetRecovered() (DataSet, error){
+	dataset, err := service.getData(recoverdUrl)
+	if err == nil{
+		dataset.Index = "recovered"
+	}
+	return dataset, err
 }
 
-func (service DataService) getData(url string) ([]DataSetRow, error){
+func (service DataService) getData(url string) (DataSet, error){
 	resp, err := http.Get(url)
 	if err != nil {
-		return nil, fmt.Errorf("error downloading data: %s", err)
+		return DataSet{}, fmt.Errorf("error downloading data: %s", err)
 	}
 	defer resp.Body.Close()
 
@@ -61,7 +73,7 @@ func (service DataService) getData(url string) ([]DataSetRow, error){
 				Date:  date.Format("2006-01-02"),
 				Count: value,
 			})
-			date.AddDate(0,0,1)
+			date = date.AddDate(0,0,1)
 		}
 		row.Values = values
 		dataset = append(dataset, row)

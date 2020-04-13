@@ -18,5 +18,5 @@ func AppendControllers(router *mux.Router){
 	}).Methods(GET)
 
 	router.HandleFunc("/elastic", covidController.RunElastic).Methods(GET)
-	router.HandleFunc("/download", covidController.DownloadData).Methods(GET)
+	router.HandleFunc("/update/{case}", covidController.UpdateCases).Methods(GET)
 }

@@ -4,7 +4,6 @@ import (
 	"github.com/FBerco/covid19/src/api/covid"
 	"log"
 	"github.com/elastic/go-elasticsearch/v8"
-
 )
 
 func newCovidController() *covid.Controller{

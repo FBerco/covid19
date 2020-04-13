@@ -3,12 +3,13 @@ package covid
 import (
 	"fmt"
 	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 )
 
 type dataService interface {
-	GetConfirmedCases() (DataSet, error)
+	GetConfirmed() (DataSet, error)
 	GetDeath() (DataSet, error)
 	GetRecovered() (DataSet, error)
 }
@@ -22,13 +23,27 @@ type Controller struct{
 	ElasticService elasticService
 }
 
-func (c Controller) DownloadData(writer http.ResponseWriter, request *http.Request){
-	dataset, err := c.DataService.GetConfirmedCases()
+func (c Controller) UpdateCases(writer http.ResponseWriter, request *http.Request){
+	var dataset DataSet
+	var err error
+	vars := mux.Vars(request)
+	switch
+	{
+		case vars["case"] == "confirmed":
+			dataset, err = c.DataService.GetConfirmed()
+			break
+		case vars["case"] == "deaths":
+			dataset, err = c.DataService.GetDeath()
+			break
+		case vars["case"] == "recovered":
+			dataset, err = c.DataService.GetRecovered()
+			break
+		default:
+			writer.WriteHeader(http.StatusNotFound)
+	}
 	if err != nil{
 		log.Fatalf("Error getting response: %s", err)
 	}
-	fmt.Println("Got the data")
-	fmt.Println("Indexing to elastic")
 	c.ElasticService.IndexDataSet(dataset)
 	//fmt.Fprintln(writer, dataset)
 }

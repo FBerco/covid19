@@ -36,7 +36,6 @@ func (service ElasticService) IndexDataSet(dataset DataSet) error{
 			service.IndexDoc(ctx, doc, dataset.Index)
 		}
 	}
-
 	return nil
 }
 
@@ -56,7 +55,7 @@ func (service ElasticService) IndexDoc(ctx context.Context, doc ElasticDoc, inde
 	defer res.Body.Close()
 
 	if res.IsError() {
-		log.Fatalf("%s ERROR indexing document ID=%d", res.Status(), req.DocumentID)
+		log.Fatalf("%s ERROR indexing document ID=%s", res.Status(), req.DocumentID)
 	} else {
 		// Deserialize the response into a map.
 		var resMap map[string]interface{}
@@ -69,7 +68,6 @@ func (service ElasticService) IndexDoc(ctx context.Context, doc ElasticDoc, inde
 			fmt.Println("Result:", resMap["result"])
 			fmt.Println("Version:", int(resMap["_version"].(float64)))
 			fmt.Println("resMap:", resMap)
-			fmt.Println("\n")
 		}
 	}
 }

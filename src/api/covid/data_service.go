@@ -3,6 +3,7 @@ package covid
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -20,36 +21,39 @@ type DataService struct{
 
 }
 
-func (service DataService) GetConfirmedCases() (DataSet, error){
-	dataset, err := service.getData(confirmedUrl)
+func (service DataService) GetConfirmed() (DataSet, error){
+	dataset, err := service.getDataSet(confirmedUrl)
 	if err == nil{
 		dataset.Index = "confirmed"
 	}
 	return dataset, err
 }
 func (service DataService) GetDeath() (DataSet, error){
-	dataset, err := service.getData(deathsUrl)
+	dataset, err := service.getDataSet(deathsUrl)
 	if err == nil{
 		dataset.Index = "deaths"
 	}
 	return dataset, err
 }
 func (service DataService) GetRecovered() (DataSet, error){
-	dataset, err := service.getData(recoverdUrl)
+	dataset, err := service.getDataSet(recoverdUrl)
 	if err == nil{
 		dataset.Index = "recovered"
 	}
 	return dataset, err
 }
 
-func (service DataService) getData(url string) (DataSet, error){
+func (service DataService) getDataSet(url string) (DataSet, error){
 	resp, err := http.Get(url)
 	if err != nil {
 		return DataSet{}, fmt.Errorf("error downloading data: %s", err)
 	}
 	defer resp.Body.Close()
+	return service.ReaderToDataset(resp.Body)
+}
 
-	scanner := bufio.NewScanner(resp.Body)
+func (service DataService) ReaderToDataset(reader io.ReadCloser) (DataSet, error){
+	scanner := bufio.NewScanner(reader)
 	var dataset []DataSetRow
 	scanner.Scan()
 	scanner.Scan()
@@ -66,9 +70,8 @@ func (service DataService) getData(url string) (DataSet, error){
 		for i := 5; i < len(data); i++{
 			value, err := strconv.Atoi(data[i])
 			if err != nil {
-				fmt.Println(data)
-				return DataSet{}, fmt.Errorf("error converting data: %s, i: %s", err, i)
-				}
+				return DataSet{}, fmt.Errorf("error converting data: %s, i: %d", err, i)
+			}
 			values = append(values, PerDayValues{
 				Date:  date.Format("2006-01-02"),
 				Count: value,
@@ -80,4 +83,3 @@ func (service DataService) getData(url string) (DataSet, error){
 	}
 	return DataSet{Data: dataset}, nil
 }
-

@@ -17,6 +17,5 @@ func AppendControllers(router *mux.Router){
 		fmt.Fprintln(writer, "up and going")
 	}).Methods(GET)
 
-	router.HandleFunc("/elastic", covidController.RunElastic).Methods(GET)
 	router.HandleFunc("/update/{case}", covidController.UpdateCases).Methods(GET)
 }

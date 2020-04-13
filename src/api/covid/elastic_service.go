@@ -18,7 +18,6 @@ func (service ElasticService) IndexDataSet(dataset DataSet) error{
 	if err := dataset.Valid(); err != nil{
 		return err
 	}
-
 	ctx := context.Background()
 
 	for _, data := range dataset.Data{
@@ -57,13 +56,11 @@ func (service ElasticService) IndexDoc(ctx context.Context, doc ElasticDoc, inde
 	if res.IsError() {
 		log.Fatalf("%s ERROR indexing document ID=%s", res.Status(), req.DocumentID)
 	} else {
-		// Deserialize the response into a map.
 		var resMap map[string]interface{}
 		if err := json.NewDecoder(res.Body).Decode(&resMap); err != nil {
 			log.Printf("Error parsing the response body: %s", err)
 		} else {
 			log.Printf("\nIndexRequest() RESPONSE:")
-			// Print the response status and indexed document version.
 			fmt.Println("Status:", res.Status())
 			fmt.Println("Result:", resMap["result"])
 			fmt.Println("Version:", int(resMap["_version"].(float64)))
